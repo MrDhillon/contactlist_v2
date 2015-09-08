@@ -51,7 +51,7 @@ class Contact2
     conn.exec(sql,[name]) do |response|
       response.values.each { |row| last_names << Contact2.new(row[1],row[2],row[3],row[0])}
     end
-    last_names
+    last_names.each { |contact| puts "#{contact.firstname},#{contact.lastname},#{contact.email}" }
   end
 
   def self.find_all_by_firstname(name)
@@ -60,7 +60,7 @@ class Contact2
     conn.exec_params(sql,[name]) do |response|
       response.values.each { |row| first_names << Contact2.new(row[1],row[2],row[3],row[0])}
     end
-    first_names
+    first_names.each { |contact| puts "#{contact.firstname},#{contact.lastname},#{contact.email}"}
   end
 
   def self.find_all_by_email(email)
@@ -82,7 +82,11 @@ class Contact2
     sql = "SELECT * FROM contacts WHERE id = $1;"
     conn.exec_params(sql,[id]) do |response|
       result = response.values[0]
-      contact =  Contact2.new(result[1],result[2],result[3],result[0])
+      if !result.nil?
+        Contact2.new(result[1],result[2],result[3],result[0])
+      else
+        puts "ID doesnt exist"
+      end
     end
   end
 
