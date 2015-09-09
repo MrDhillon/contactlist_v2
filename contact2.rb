@@ -5,6 +5,10 @@ class Contact < ActiveRecord::Base
   validates :lastname, presence: true
   validates :email, presence: true, uniqueness: true
 
+  def to_s
+    "#{firstname},#{lastname},#{email}"
+  end
+
 end
 
 

@@ -17,6 +17,7 @@ class Application
             firstname - Contacts with that firstname
             show - Show a contact
             find - Find a contact by id
+            number - add number to contact
             list - list all contacts"
     when "new"
       puts "What is the first name?"
@@ -47,12 +48,28 @@ class Application
             contact.save
             puts "Contact created with id: #{contact.id}"
         end
+    when "number"
+      puts "id of contact to add number to"
+      num_id = $stdin.gets.chomp
+      cont_id = Contact.find(num_id)
+      puts "what type of number do you have? WORK HOME MOBILE"
+      typee = $stdin.gets.chomp
+      puts "What is the number?"
+      number = $stdin.gets.chomp
+      cont_id.phonenumbers.create(kind: typee, phone: number)
     when "delete"
-      self.destroy
+      puts "what is the ID of contact you want to delete"
+      id = $stdin.gets.chomp
+      d = Contact.find(id)
+      d.phonenumbers.each do |row|
+        row.destroy
+      end
+      d.destroy
     when "lastname"
       puts "What is the last name that you want to display?"
       last_name = $stdin.gets.chomp.downcase
-      ap Contact.where(lastname: last_name)
+      result = Contact.where(lastname: last_name)
+      result.each { |contact| puts "#{contact} + #{contact.phonenumbers.join(" ,")}" }
     when "list"
       ap Contact.all
     when "firstname"
