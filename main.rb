@@ -1,12 +1,10 @@
-require './contact2'
-require 'pg'
-require 'pry'
-
-mike = Contact2.new('mike','haze','mikey@email.com')
-
+# mike = Contact2.new('mike','haze','mikey@email.com')
+require_relative 'contact2'
+require_relative 'phone'
+require 'awesome_print'
 class Application
 
-  def self.run
+  def self.app
 
     arg = ARGV[0]
 
@@ -27,39 +25,40 @@ class Application
       lname = $stdin.gets.chomp.downcase
       puts "What is the email?"
       email = $stdin.gets.chomp.downcase
-      if Contact2.find_all_by_email(email) == []
-        puts "Would you like to add a number?"
-        pnum = $stdin.gets.chomp.downcase
-          if pnum == "yes"
-            while pnum == "yes"
+      contact_new = Contact.new(firstname: fname, lastname: lname, email: email)
+      unless contact_new.save
+        ap "Email already exists"
+      end
+      puts "Contact with email: #{email} saved to database with id: #{contact_new.id}"
+      puts "Would you like to add a number?"
+      pnum = $stdin.gets.chomp.downcase
+        if pnum == "yes"
+          while pnum == "yes"
               puts "what type of number do you have? WORK HOME MOBILE"
-              type = $stdin.gets.chomp
+              typee = $stdin.gets.chomp
               puts "What is the number?"
               number = $stdin.gets.chomp
+              contact_new.phonenumbers.create(kind: typee, phone: number)
               puts "would you like to add another number?"
               pnum = $stdin.gets.chomp
             end
           else
-            contact = Contact2.new(fname,lname,email)
+            contact = Contact.new(fname,lname,email)
             contact.save
             puts "Contact created with id: #{contact.id}"
-          end
-      else
-        puts "Contact already exists"
-      end
+        end
     when "delete"
+      self.destroy
     when "lastname"
-      puts "What is the First name that you want to display?"
+      puts "What is the last name that you want to display?"
       last_name = $stdin.gets.chomp.downcase
-      Contact2.find_all_by_lastname(last_name)
+      ap Contact.where(lastname: last_name)
     when "list"
-      Contact2.all
+      ap Contact.all
     when "firstname"
       puts "What is the First name that you want to display?"
       first_name = $stdin.gets.chomp.downcase
-      Contact2.find_all_by_firstname(first_name)
+      ap Contact.where(firstname: first_name)
     end
   end
 end
-
-Application.run
